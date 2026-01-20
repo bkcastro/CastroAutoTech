@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Castro Auto Tech | Mobile Mechanic in LA County</title>
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <!-- Google Fonts -->
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Bebas+Neue&display=swap"
+    />
+
+    <!-- Leaflet JS -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+    <style>
+        /* ===== THEME VARIABLES ===== */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111827;
+            --muted-text: #6b7280;
+            --accent-color: #019bdb;   /* Bold red accent */
+            --accent-dark: #0385bd;
+            --border-subtle: #e5e7eb;
+            --card-bg: #f9fafb;
+            --nav-bg: #111827;
+        }
+
+        /* ===== GLOBAL RESET ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+                "Segoe UI", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .section {
+            padding: 4rem 1.5rem;
+        }
+
+        .section-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===== NAVIGATION ===== */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            background-color: var(--nav-bg);
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            border: 2px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .brand-text span:first-child {
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .nav-links a {
+            position: relative;
+            padding-bottom: 0.15rem;
+        }
+
+        .nav-links a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent-color);
+            transition: width 0.2s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ase-logo {
+            height: 38px;
+            width: auto;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.1rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+                transform 0.1s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border-color: var(--accent-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-dark);
+            border-color: var(--accent-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: #000000;
+            border-color: #4b5563;
+        }
+
+        .btn-outline:hover {
+            border-color: #9ca3af;
+            background-color: rgba(156, 163, 175, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            background: radial-gradient(circle at top left, #34bbf5 0, #ffffff 50%);
+            padding-top: 4rem;
+            padding-bottom: 3rem;
+        }
+
+        .hero-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .hero-tagline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--accent-dark);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 1rem;
+        }
+
+        .hero-heading {
+            font-family: "Bebas Neue", system-ui, sans-serif;
+            font-size: clamp(2.4rem, 5vw, 3.3rem);
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .hero-subheading {
+            font-size: 1.05rem;
+            color: var(--muted-text);
+            max-width: 30rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-cta-note {
+            font-size: 0.9rem;
+            color: var(--muted-text);
+        }
+
+        .hero-contact {
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .hero-contact strong {
+            font-weight: 600;
+        }
+
+        .hero-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #4b5563;
+            background-color: rgba(249, 250, 251, 0.9);
+        }
+
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-logo-card {
+            background-color: #111827;
+            color: #ffffff;
+            border-radius: 1.5rem;
+            padding: 1.75rem;
+            max-width: 360px;
+            width: 100%;
+            box-shadow: 0 24px 40px rgba(15, 23, 42, 0.35);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .hero-logo {
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-logo img {
+            max-width: 200px;
+        }
+
+        .hero-card-text-main {
+            font-size: 0.9rem;
+            color: #e5e7eb;
+        }
+
+        .hero-card-highlight {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--accent-color);
+        }
+
+        .hero-card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        /* ===== STATEMENT BAR ===== */
+        .statement {
+            background-color: #000000;
+            color: #ffffff;
+            text-align: center;
+            padding: 1.1rem 1rem;
+            font-family: "Bebas Neue", system-ui, sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            border-top: 1px solid #111827;
+            border-bottom: 1px solid #111827;
+        }
+
+        /* ===== ABOUT ===== */
+        .about-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+            gap: 2.5rem;
+            align-items: flex-start;
+        }
+
+        .section-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--accent-dark);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 1.7rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtext {
+            font-size: 0.98rem;
+            color: var(--muted-text);
+            max-width: 36rem;
+        }
+
+        .about-callout {
+            margin-top: 1.5rem;
+            padding: 1rem 1.1rem;
+            border-radius: 0.9rem;
+            border: 1px solid var(--border-subtle);
+            background-color: #f9fafb;
+            font-size: 0.9rem;
+        }
+
+        .about-callout strong {
+            color: #111827;
+        }
+
+        .about-meta-list {
+            display: grid;
+            gap: 0.9rem;
+            font-size: 0.9rem;
+            color: var(--muted-text);
+        }
+
+        .about-meta-item span {
+            display: block;
+        }
+
+        .about-meta-label {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.12em;
+            color: #6b7280;
+        }
+
+        .about-meta-value {
+            font-weight: 600;
+            color: #111827;
+            margin-top: 0.2rem;
+        }
+
+        /* ===== SERVICES ===== */
+        .services {
+            background-color: #f3f4f6;
+        }
+
+        .services-header {
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .services-header p {
+            font-size: 0.96rem;
+            color: var(--muted-text);
+            max-width: 36rem;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.25rem;
+        }
+
+        .service-card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            padding: 1rem 1.1rem;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .service-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .service-desc {
+            font-size: 0.85rem;
+            color: var(--muted-text);
+        }
+
+        .service-tag {
+            margin-top: 0.2rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #9ca3af;
+        }
+
+        /* ===== SERVICE AREA + MAP ===== */
+        .service-area {
+            padding-bottom: 4rem;
+        }
+
+        .service-area-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.2fr);
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .service-area-text p {
+            font-size: 0.96rem;
+            color: var(--muted-text);
+            margin-bottom: 1rem;
+            max-width: 28rem;
+        }
+
+        .service-area-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0 0 1rem;
+        }
+
+        .service-area-list li {
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+
+        .service-area-list li::before {
+            content: "• ";
+            color: var(--accent-color);
+        }
+
+        .service-area-note {
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        #map {
+            width: 100%;
+            height: 360px;
+            border-radius: 1.1rem;
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+        }
+
+        /* ===== CONTACT STRIP ===== */
+        .contact-strip {
+            background-color: #111827;
+            color: #f9fafb;
+            padding: 1.4rem 1.5rem;
+        }
+
+        .contact-strip-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .contact-strip-text {
+            font-size: 0.95rem;
+        }
+
+        .contact-strip-text span {
+            display: block;
+        }
+
+        .contact-strip-text strong {
+            font-size: 1rem;
+        }
+
+        /* ===== FOOTER ===== */
+        .site-footer {
+            background-color: #000000;
+            color: #9ca3af;
+            padding: 1.4rem 1.5rem;
+        }
+
+        .footer-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
+        }
+
+        .footer-left,
+        .footer-right {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.85rem;
+            align-items: center;
+        }
+
+        .footer-divider {
+            width: 1px;
+            height: 0.9rem;
+            background-color: #4b5563;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            nav {
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+
+            .nav-links {
+                display: none; /* Keep it simple on mobile: focus on brand + call now */
+            }
+
+            .hero-inner {
+                grid-template-columns: minmax(0, 1fr);
+                text-align: left;
+            }
+
+            .hero {
+                padding-top: 3rem;
+            }
+
+            .hero-card-text-main {
+                font-size: 0.88rem;
+            }
+
+            .about-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .services-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .service-area-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            #map {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .services-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .section {
+                padding: 3rem 1.25rem;
+            }
+
+            .hero-heading {
+                font-size: 2.2rem;
+            }
+
+            .statement {
+                font-size: 1.1rem;
+                letter-spacing: 0.16em;
+            }
+
+            .contact-strip-inner {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrapper">
+    <!-- ===== HEADER / NAV ===== -->
+    <header class="site-header">
+        <nav>
+            <div class="brand">
+                <div class="brand-text">
+                    <span>Castro Auto Tech</span>
+                    <span>Mobile Mechanic • LA County</span>
+                </div>
+            </div>
+
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#services">Services</a>
+                <a href="#about">About</a>
+                <a href="#service-area">Service Area</a>
+            </div>
+
+            <div class="nav-right">
+                <a href="tel:16267476406" class="btn btn-primary">
+                    Call Now
+                </a>
+                <img
+                    class="ase-logo"
+                    src="images/ase.png"
+                    alt="ASE Certified Technician"
+                />
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- ===== HERO ===== -->
+        <section id="home" class="hero">
+            <div class="hero-inner">
+                <div class="hero-copy">
+                    <div class="hero-tagline">
+                        ASE Certified • Mobile Mechanic
+                    </div>
+
+                    <h1 class="hero-heading">
+                        Mobile Auto Repair<br />You Can Trust
+                    </h1>
+
+                    <p class="hero-subheading">
+                        Full-service automotive repair brought directly to your home,
+                        work, or roadside. Skip the shop — we come to you.
+                    </p>
+
+                    <div class="hero-cta-row">
+                        <a href="tel:16267476406" class="btn btn-primary">
+                            Call (626) 747-6406
+                        </a>
+                        <a href="#contact" class="btn btn-outline">
+                            Book an appointment
+                        </a>
+                    </div>
+
+                    <p class="hero-contact">
+                        <strong>Phone:</strong> (626) 747-6406<br />
+                        <strong>Email:</strong> <a href="contact@castroautotech.com">contact@castroautotech.com</a><br />
+                        <strong>Service:</strong> Los Angeles County &amp; surrounding areas
+                    </p>
+
+                    <p class="hero-cta-note">
+                        Same-day appointments often available.
+                    </p>
+
+                    <div class="hero-badges">
+                        <div class="badge">ASE Certified</div>
+                        <div class="badge">Family-Owned</div>
+                        <div class="badge">On-Site Service</div>
+                        <div class="badge">Honest Diagnostics</div>
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <div class="hero-logo-card">
+                        <div class="hero-logo">
+                            <img
+                                src="images/logo.png"
+                                alt="Castro Auto Tech logo"
+                            />
+                        </div>
+                        <div class="hero-card-text-main">
+                            Professional auto service at your driveway, office,
+                            or roadside. Avoid the tow truck and waiting room —
+                            get dealership-quality work wherever you’re parked.
+                            <div class="hero-card-highlight">
+                                We bring the shop to you.
+                            </div>
+                        </div>
+                        <div class="hero-card-meta">
+                            <span>La Puente, CA</span>
+                            <span>Serving LA County</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== STATEMENT BAR ===== -->
+        <div class="statement">
+            PROFESSIONAL AUTO SERVICE • ANYWHERE IN LOS ANGELES COUNTY
+        </div>
+
+        <!-- ===== ABOUT ===== -->
+        <section id="about" class="section">
+            <div class="section-inner">
+                <div class="about-grid">
+                    <div>
+                        <div class="section-label">About</div>
+                        <h2 class="section-title">
+                            Honest, Dependable Mobile Auto Repair
+                        </h2>
+                        <p class="section-subtext">
+                            Castro Auto Tech provides certified diagnostics,
+                            maintenance, and repairs wherever your vehicle is parked.
+                            Save time, avoid sitting in a shop, and get the work done
+                            the right way the first time.
+                        </p>
+
+                        <div class="about-callout">
+                            <strong>Family-owned and ASE certified,</strong> we pride
+                            ourselves on clear communication, fair pricing, and
+                            high-quality workmanship. You’ll know what’s wrong,
+                            what it costs, and what we recommend — before we turn
+                            a wrench.
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="about-meta-list">
+                            <div class="about-meta-item">
+                                <span class="about-meta-label">Service Type</span>
+                                <span class="about-meta-value">
+                                    Mobile mechanic — we come to you
+                                </span>
+                            </div>
+                            <div class="about-meta-item">
+                                <span class="about-meta-label">Coverage</span>
+                                <span class="about-meta-value">
+                                    La Puente, CA &amp; Los Angeles County
+                                </span>
+                            </div>
+                            <div class="about-meta-item">
+                                <span class="about-meta-label">Certified</span>
+                                <span class="about-meta-value">
+                                    ASE Certified Technician
+                                </span>
+                            </div>
+                            <div class="about-meta-item">
+                                <span class="about-meta-label">Ideal For</span>
+                                <span class="about-meta-value">
+                                    Busy schedules, home service, fleet vehicles,
+                                    and breakdowns that can’t make it to the shop.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SERVICES ===== -->
+        <section id="services" class="section services">
+            <div class="section-inner">
+                <div class="services-header">
+                    <div class="section-label">Services</div>
+                    <h2 class="section-title">What We Can Do On-Site</h2>
+                    <p>
+                        From basic maintenance to more involved repairs, we handle
+                        a wide range of services without you ever leaving home or work.
+                        If you don’t see what you need, give us a call.
+                    </p>
+                </div>
+
+                <div class="services-grid">
+                    <article class="service-card">
+                        <div class="service-title">Oil &amp; Filter Service</div>
+                        <div class="service-desc">
+                            Quality oil and filters to protect your engine and extend
+                            its life.
+                        </div>
+                        <div class="service-tag">Maintenance</div>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-title">Brake Service</div>
+                        <div class="service-desc">
+                            Pads, rotors, inspections, and brake checks to keep you
+                            stopping safely.
+                        </div>
+                        <div class="service-tag">Safety</div>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-title">Diagnostics</div>
+                        <div class="service-desc">
+                            Check-engine lights, strange noises, and drivability
+                            issues diagnosed on-site.
+                        </div>
+                        <div class="service-tag">Problem Solving</div>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-title">Tune-Ups</div>
+                        <div class="service-desc">
+                            Spark plugs, ignition components, and fuel system
+                            cleaning for smoother running.
+                        </div>
+                        <div class="service-tag">Performance</div>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-title">Battery &amp; Starting</div>
+                        <div class="service-desc">
+                            Battery testing, replacement, and basic charging system
+                            checks.
+                        </div>
+                        <div class="service-tag">No-Start Help</div>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-title">Belts &amp; Drive Components</div>
+                        <div class="service-desc">
+                            Drive belts and related components replaced before they
+                            fail.
+                        </div>
+                        <div class="service-tag">Preventative</div>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-title">Tire Rotation &amp; Inflation</div>
+                        <div class="service-desc">
+                            Tire rotation and pressure checks to help your tires
+                            wear evenly.
+                        </div>
+                        <div class="service-tag">Tire Care</div>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-title">Inspections</div>
+                        <div class="service-desc">
+                            General inspections and pre-trip checks for peace of mind.
+                        </div>
+                        <div class="service-tag">Peace of Mind</div>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-title">More on Request</div>
+                        <div class="service-desc">
+                            Have a specific issue or repair in mind? Call to see if
+                            we can handle it on-site.
+                        </div>
+                        <div class="service-tag">Call to Ask</div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SERVICE AREA & MAP ===== -->
+        <section id="service-area" class="section service-area">
+            <div class="section-inner">
+                <div class="service-area-grid">
+                    <div class="service-area-text">
+                        <div class="section-label">Service Area</div>
+                        <h2 class="section-title">
+                            Serving La Puente &amp; the Greater LA County Area
+                        </h2>
+                        <p>
+                            We proudly serve La Puente, CA and surrounding communities
+                            within approximately a 40-mile radius. If you’re not sure
+                            you’re in range, give us a quick call and we’ll let you know.
+                        </p>
+
+                        <ul class="service-area-list">
+                            <li>La Puente &amp; San Gabriel Valley</li>
+                            <li>Much of Los Angeles County</li>
+                            <li>Homes, workplaces, and roadside locations</li>
+                        </ul>
+
+                        <p class="service-area-note">
+                            Coverage may vary based on schedule and job type.
+                        </p>
+                    </div>
+
+                    <div>
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CONTACT STRIP ===== -->
+        <section id="contact" class="contact-strip">
+            <div class="contact-strip-inner">
+                <div class="contact-strip-text">
+                    <span>Ready to schedule service?</span>
+                    <span><strong>Call now to book your mobile appointment.</strong></span>
+                </div>
+                <div class="hero-cta-row">
+                    <a href="tel:16267476406" class="btn btn-primary">
+                        Call (626) 747-6406
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-left">
+                <span>©
+                    <script>
+                        document.write(new Date().getFullYear());
+                    </script>
+                    Castro Mobile Auto Tech
+                </span>
+                <div class="footer-divider"></div>
+                <span>ASE Certified Mobile Mechanic</span>
+            </div>
+            <div class="footer-right">
+                <span>Phone: <a href="tel:16267476406">(626) 747-6406</a></span>
+                <div class="footer-divider"></div>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- ===== MAP SCRIPT ===== -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // La Puente coordinates
+        const center = [34.0200, -117.9490];
+
+        // Create map
+        const map = L.map("map").setView(center, 10);
+
+        // Load OpenStreetMap tiles
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: "&copy; OpenStreetMap contributors"
+        }).addTo(map);
+
+        // Add marker at La Puente
+        L.marker(center)
+            .addTo(map)
+            .bindPopup("<b>La Puente, CA</b>")
+            .openPopup();
+
+        // 40-mile radius in meters
+        const radiusMeters = 40 * 1609.34;
+
+        // Draw service circle
+        L.circle(center, {
+            radius: radiusMeters,
+            color: "#000000",
+            fillColor: "#000000",
+            fillOpacity: 0.06,
+            weight: 2
+        }).addTo(map);
+    });
+</script>
+</body>
+</html>
